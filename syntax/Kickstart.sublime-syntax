@@ -1,0 +1,36 @@
+%YAML 1.2
+---
+name: Kickstart
+file_extensions: [cfg]
+scope: source.ks
+
+contexts:
+  prototype:
+    - include: comments
+  main:
+    - match: '^(auth|authconfig|autostep|bootloader|btrfs|cdrom|clearpart|cmdline|device|driverdisk|eula|fcoe|firewall|firstboot|group|graphical|halt|ignoredisk|install|iscsi|iscsiname|keyboard|lang|logging|logvol|mediacheck|network|part|partition|poweroff|raid|realm|reboot|repo|rescue|rootpw|selinux|services|shutdown|skipx|sshpw|text|timezone|unsupported_hardware|user|vnc|volgroup|xconfig|zerombr|zfcp)\b'
+      scope: keyword.control.ks.command
+      push: command    
+    - match: '^%(addon|packages|pre|post)\b'
+      scope: keyword.control.ks.section.begin
+      push: section
+  comments: 
+    - match: '#'
+      scope: punctuation.definition.comment.ks
+      push: line_comment
+  line_comment:
+    - meta_scope: comment.line.ks
+    - match: $
+      pop: true
+  command:
+    - meta_scope: meta.command
+    - match: '--[a-zA-Z0-9_-]+'
+      scope: constant.language.ks
+    - match: $
+      pop: true
+  section:
+    - meta_scope: meta.section
+    - match: '^%end'
+      scope: keyword.control.ks.section.end
+      pop: true
+
